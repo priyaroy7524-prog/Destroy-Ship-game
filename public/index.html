@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#061525" />
+  <title>Destroy Ship | Naval Combat</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+  <div class="ocean-glow ocean-glow-one"></div>
+  <div class="ocean-glow ocean-glow-two"></div>
+
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Destroy Ship home">
+      <span class="brand-icon">✦</span>
+      <span>DESTROY<span class="brand-accent">SHIP</span>
+        <small>NAVAL COMBAT SYSTEM</small>
+      </span>
+    </a>
+
+    <div class="server-status">
+      <span class="status-dot"></span>
+      <span>COMMAND CENTER</span>
+      <span class="status-divider"></span>
+      <span class="status-label">ONLINE</span>
+    </div>
+
+    <button id="new-game-btn" class="button button-outline" type="button">
+      ↻ <span>NEW MATCH</span>
+    </button>
+  </header>
+
+  <main class="page-shell">
+    <section class="intro">
+      <div class="eyebrow"><span></span> MULTIPLAYER TACTICAL WARFARE</div>
+      <h1>RULE THE <span>OCEAN.</span></h1>
+      <p>Track the enemy fleet. Lock your target. Make every shot count.</p>
+    </section>
+
+    <section class="match-bar">
+      <div class="match-info">
+        <span class="mini-label">MATCH ID</span>
+        <strong id="game-number">WAITING FOR OPPONENT</strong>
+      </div>
+
+      <div class="match-state">
+        <span class="status-dot"></span>
+        <span id="connection-status">CONNECTING TO SERVER</span>
+      </div>
+
+      <div class="match-info match-info-right">
+        <span class="mini-label">GAME MODE</span>
+        <strong>CLASSIC BATTLESHIP</strong>
+      </div>
+    </section>
+
+    <section id="waiting-room" class="waiting-card">
+      <div class="radar">
+        <div class="radar-ring radar-ring-one"></div>
+        <div class="radar-ring radar-ring-two"></div>
+        <div class="radar-cross"></div>
+        <div class="radar-sweep"></div>
+        <span class="radar-blip"></span>
+      </div>
+
+      <div class="waiting-copy">
+        <span class="eyebrow">FLEET COMMAND</span>
+        <h2>SEARCHING FOR AN OPPONENT</h2>
+        <p>Keep this window open. You'll enter the battle automatically when another player joins.</p>
+        <div class="loading-line"><span></span></div>
+        <span class="waiting-footnote">SCANNING THE BATTLE NETWORK...</span>
+      </div>
+    </section>
+
+    <section id="disconnected" class="alert-card" hidden>
+      <span class="alert-symbol">!</span>
+      <div>
+        <strong>CONNECTION LOST</strong>
+        <p>Unable to reach the battle server. Check your connection and refresh the page.</p>
+      </div>
+    </section>
+
+    <section id="game" hidden>
+      <div class="battle-heading">
+        <div>
+          <span class="eyebrow">LIVE ENGAGEMENT</span>
+          <h2>BATTLE <span>STATIONS</span></h2>
+        </div>
+        <div class="battle-legend">
+          <span><i class="legend-dot legend-hit"></i> HIT</span>
+          <span><i class="legend-dot legend-miss"></i> MISS</span>
+          <span><i class="legend-dot legend-ship"></i> YOUR SHIP</span>
+        </div>
+      </div>
+
+      <div class="battle-layout">
+        <article class="fleet-panel panel">
+          <div class="panel-heading">
+            <div class="player-avatar friendly-avatar">✦</div>
+            <div class="player-details">
+              <span class="mini-label">YOUR FLEET</span>
+              <h3>COMMANDER <span>01</span></h3>
+            </div>
+            <span class="player-tag">YOU</span>
+          </div>
+
+          <div class="fleet-stats">
+            <div>
+              <span class="mini-label">SHIPS LEFT</span>
+              <strong id="your-ships-left">5</strong>
+            </div>
+            <div>
+              <span class="mini-label">YOUR STATUS</span>
+              <strong id="your-status">READY</strong>
+            </div>
+          </div>
+
+          <div class="grid-frame">
+            <div class="axis axis-top" aria-hidden="true">
+              <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
+              <span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+            </div>
+            <div class="grid-with-rows">
+              <div class="axis axis-side" aria-hidden="true">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+              </div>
+              <canvas id="canvas-grid1" width="361" height="361" aria-label="Your fleet battle grid"></canvas>
+            </div>
+          </div>
+
+          <div class="panel-footer">
+            <span class="footer-pulse"></span>
+            <span>FRIENDLY WATERS</span>
+            <span class="footer-coordinates">GRID 10 × 10</span>
+          </div>
+        </article>
+
+        <div class="battle-center">
+          <div class="versus">VS</div>
+          <div class="target-icon">⌖</div>
+          <span class="mini-label">COMBAT LINK</span>
+          <div class="center-line"></div>
+          <p id="turn-status" class="turn-status">WAITING FOR BATTLE</p>
+          <span class="center-hint">TARGET THE ENEMY GRID</span>
+        </div>
+
+        <article class="fleet-panel enemy-panel panel">
+          <div class="panel-heading">
+            <div class="player-avatar enemy-avatar">⌖</div>
+            <div class="player-details">
+              <span class="mini-label">ENEMY WATERS</span>
+              <h3>HOSTILE <span>CONTACT</span></h3>
+            </div>
+            <span class="player-tag enemy-tag">ENEMY</span>
+          </div>
+
+          <div class="fleet-stats">
+            <div>
+              <span class="mini-label">ENEMY SHIPS</span>
+              <strong id="enemy-ships-left">5</strong>
+            </div>
+            <div>
+              <span class="mini-label">TARGET STATUS</span>
+              <strong id="enemy-status">UNKNOWN</strong>
+            </div>
+          </div>
+
+          <div class="grid-frame enemy-grid-frame">
+            <div class="axis axis-top" aria-hidden="true">
+              <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
+              <span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+            </div>
+            <div class="grid-with-rows">
+              <div class="axis axis-side" aria-hidden="true">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+              </div>
+              <canvas id="canvas-grid2" width="361" height="361" aria-label="Enemy target battle grid"></canvas>
+            </div>
+          </div>
+
+          <div class="panel-footer">
+            <span class="footer-pulse enemy-pulse"></span>
+            <span>HOSTILE TERRITORY</span>
+            <span class="footer-coordinates">TARGET GRID</span>
+          </div>
+        </article>
+      </div>
+
+      <section class="bottom-layout">
+        <article class="panel fleet-health">
+          <div class="section-title">
+            <div>
+              <span class="mini-label">FLEET MONITOR</span>
+              <h3>SHIP <span>INTEGRITY</span></h3>
+            </div>
+            <span class="health-icon">✚</span>
+          </div>
+          <div id="fleet-health-list" class="health-list">
+            <div class="health-item"><span>Carrier</span>
+              <div class="health-track"><i style="width:100%"></i></div><b>5</b>
+            </div>
+            <div class="health-item"><span>Battleship</span>
+              <div class="health-track"><i style="width:100%"></i></div><b>4</b>
+            </div>
+            <div class="health-item"><span>Destroyer</span>
+              <div class="health-track"><i style="width:100%"></i></div><b>3</b>
+            </div>
+            <div class="health-item"><span>Submarine</span>
+              <div class="health-track"><i style="width:100%"></i></div><b>3</b>
+            </div>
+            <div class="health-item"><span>Patrol Boat</span>
+              <div class="health-track"><i style="width:100%"></i></div><b>2</b>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel comms-panel">
+          <div class="section-title">
+            <div>
+              <span class="mini-label">SECURE CHANNEL</span>
+              <h3>TACTICAL <span>COMMS</span></h3>
+            </div>
+            <span class="comms-status"><i></i> LIVE</span>
+          </div>
+          <ul id="messages-list" class="messages-list" aria-live="polite">
+            <li class="system-message">System ready. Waiting for players...</li>
+          </ul>
+          <form id="message-form" class="message-form">
+            <input id="message" type="text" placeholder="Send a tactical message..." maxlength="250"
+              autocomplete="off" />
+            <button type="submit" aria-label="Send message">➤</button>
+          </form>
+        </article>
+      </section>
+    </section>
+
+    <footer class="page-footer">
+      <span>DESTROYSHIP <b>TACTICAL SYSTEMS</b></span>
+      <span>STRATEGY · PRECISION · VICTORY</span>
+      <span>BUILD 2026.01</span>
+    </footer>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/game.js"></script>
+  <script src="/js/client.js"></script>
+
+<!-- Game Result Popup -->
+<div id="game-result-modal" class="result-modal" hidden>
+  <div class="result-backdrop"></div>
+
+  <div
+    class="result-card"
+    id="result-card"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="result-title"
+  >
+    <div class="result-topline">
+      <span class="result-dot"></span>
+      MISSION REPORT
+      <span class="result-code">BATTLE SYSTEM / 01</span>
+    </div>
+
+    <div class="result-emblem" id="result-emblem">
+      <span id="result-symbol">✦</span>
+    </div>
+
+    <p class="result-eyebrow" id="result-eyebrow">
+      OPERATION COMPLETE
+    </p>
+
+    <h2 id="result-title">VICTORY<span>!</span></h2>
+
+    <p class="result-message" id="result-message">
+      Enemy fleet neutralized. The ocean is yours.
+    </p>
+
+    <div class="result-divider">
+      <span></span>
+      <b>FINAL STATUS</b>
+      <span></span>
+    </div>
+
+    <div class="result-status">
+      <span>YOUR FLEET</span>
+      <strong id="result-status-text">SURVIVED</strong>
+    </div>
+
+    <div class="result-actions">
+      <button
+        type="button"
+        class="result-btn result-btn-primary"
+        id="result-restart-btn"
+      >
+        <span>↻</span> PLAY AGAIN
+      </button>
+
+      <button
+        type="button"
+        class="result-btn result-btn-secondary"
+        id="result-close-btn"
+      >
+        CLOSE REPORT
+      </button>
+    </div>
+
+    <div class="result-footer">
+      <span>◆</span> BATTLE SYSTEM
+      <span class="result-footer-right">CONNECTION SECURED</span>
+    </div>
+  </div>
+</div>
+
+</body>
+
+</html>
